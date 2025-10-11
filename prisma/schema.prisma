@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id Int @id @default(autoincrement())
   uid String @unique
 
@@ -29,5 +29,54 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  products Products[]
+
   @@map("users")
 }
+
+enum Category {
+  ELECTRONICS
+  FURNITURE
+  HOME_APPLIANCES
+  SPORTING_GOODS
+  OUTDOOR
+  TOYS
+}
+
+model Products{
+  id Int @id @default(autoincrement())
+  uid String @unique
+
+  title String
+  description String?
+  price Float
+  rentalPrice Float? @map("rental_price")
+  rentalType String? @map("rental_type") 
+  rentalTimeline String? @map("rental_timeline")
+
+  isBought Boolean @default(false) @map("is_bought")
+  isRented Boolean @default(false) @map("is_rented")
+
+  createdById Int @map("created_by_id")
+  createdByInfo Users @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  isActive Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  productCategories ProductCategories[]
+
+  @@map("products")
+}
+model ProductCategories {
+  id         String   @id @default(cuid())
+  productId  Int
+  category   Category
+  
+  productInfo    Products  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, category])
+  @@index([productId])
+  @@map("product_categories")
+}
+
