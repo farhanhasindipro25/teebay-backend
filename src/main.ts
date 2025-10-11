@@ -22,6 +22,9 @@ async function bootstrap() {
                  🔥  Status       : Running
                  🛠️   Environment  : ${configService.get('TARGET_ENV')}
                  🌐  Port         : ${configService.get('PORT')}
+                  🖥️  Host         : ${configService.get('DB_USER')}
+                  🖥️  Host         : ${configService.get('DB_PASS')}
+                  🖥️  Host         : ${configService.get('DB_NAME')}
                  ⏰  Startup Time : ${new Date().toLocaleString()}
        
        ──────────────────────────────────────────────────────────────────       
