@@ -7,9 +7,13 @@ import { join } from 'path';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
+      introspection: true,
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+      },
     }),
   ],
   exports: [GraphQLModule],
