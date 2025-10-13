@@ -7,7 +7,7 @@ import { CreateUserDto } from './users.dto';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserInput: CreateUserDto) {
+  async createUser(createUserInput: CreateUserDto) {
     const { password, ...rest } = createUserInput;
     
     const user = await this.prisma.users.create({
@@ -23,7 +23,7 @@ export class UsersService {
     return user;
   }
 
-  async findAll() {
+  async getUsers() {
     return this.prisma.users.findMany({
       where: {
         isActive: true

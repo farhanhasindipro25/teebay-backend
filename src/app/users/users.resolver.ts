@@ -9,13 +9,13 @@ export class UsersResolver {
 
   @Query(() => [User], { name: 'users' })
   async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+    return this.usersService.getUsers();
   }
 
   @Mutation(() => User, { name: 'createUser' })
   async create(
     @Args('createUserInput') createUserInput: CreateUserDto,
   ): Promise<User> {
-    return this.usersService.create(createUserInput);
+    return this.usersService.createUser(createUserInput);
   }
 }
