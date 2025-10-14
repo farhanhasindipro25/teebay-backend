@@ -23,8 +23,9 @@ input CreateProductInput {
   categories: [Category!]!
   description: String
   price: Float!
+  rentEndsAt: String
+  rentStartsAt: String
   rentalPrice: Float
-  rentalTimeline: String
   rentalType: String
   title: String!
   userUid: String!
@@ -71,8 +72,9 @@ type Product {
   isBought: Boolean!
   isRented: Boolean!
   price: Float!
+  rentEndsAt: String
+  rentStartsAt: String
   rentalPrice: Float
-  rentalTimeline: String
   rentalType: String
   title: String!
   uid: String!

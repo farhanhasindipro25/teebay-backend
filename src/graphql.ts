@@ -21,8 +21,9 @@ export interface CreateProductInput {
     categories: Category[];
     description?: Nullable<string>;
     price: number;
+    rentEndsAt?: Nullable<string>;
+    rentStartsAt?: Nullable<string>;
     rentalPrice?: Nullable<number>;
-    rentalTimeline?: Nullable<string>;
     rentalType?: Nullable<string>;
     title: string;
     userUid: string;
@@ -72,8 +73,9 @@ export interface Product {
     isBought: boolean;
     isRented: boolean;
     price: number;
+    rentEndsAt?: Nullable<string>;
+    rentStartsAt?: Nullable<string>;
     rentalPrice?: Nullable<number>;
-    rentalTimeline?: Nullable<string>;
     rentalType?: Nullable<string>;
     title: string;
     uid: string;
