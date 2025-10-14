@@ -21,6 +21,7 @@ export interface IMutation {
 }
 
 export interface IQuery {
+    user(uid: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
 }
 
