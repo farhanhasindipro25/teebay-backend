@@ -17,6 +17,11 @@ export class ProductsResolver {
     return this.productsService.getProductByUid(uid);
   }
 
+  @Query(() => [Product], { name: 'productsByUser' })
+  async findByUser(@Args('userUid') userUid: string): Promise<Product[]> {
+    return this.productsService.getProductsOfUser(userUid);
+  }
+
   @Mutation(() => Product, { name: 'createProduct' })
   async create(
     @Args('createProductInput') createProductInput: CreateProductDto,

@@ -84,6 +84,7 @@ type Product {
 type Query {
   product(uid: String!): Product!
   products: [Product!]!
+  productsByUser(userUid: String!): [Product!]!
   user(uid: String!): User!
   users: [User!]!
 }

@@ -84,4 +84,30 @@ export class ProductsService {
       categories: product.productCategories.map((pc) => pc.category as Category),
     };
   }
+
+   async getProductsOfUser(userUid: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    const products = await this.prisma.products.findMany({
+      where: {
+        createdById: user.id,
+        isActive: true,
+      },
+      include: {
+        createdByInfo: true,
+        productCategories: true,
+      },
+    });
+
+    return products.map((product) => ({
+      ...product,
+      categories: product.productCategories.map((pc) => pc.category as Category),
+    }));
+  }
 }
