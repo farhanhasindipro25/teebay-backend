@@ -65,4 +65,23 @@ export class ProductsService {
       categories: product.productCategories.map((pc) => pc.category as Category),
     }));
   }
+
+  async getProductByUid(uid: string) {
+    const product = await this.prisma.products.findUnique({
+      where: { uid },
+      include: {
+        createdByInfo: true,
+        productCategories: true,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with UID ${uid} not found`);
+    }
+
+    return {
+      ...product,
+      categories: product.productCategories.map((pc) => pc.category as Category),
+    };
+  }
 }

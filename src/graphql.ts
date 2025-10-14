@@ -83,6 +83,7 @@ export interface Product {
 }
 
 export interface IQuery {
+    product(uid: string): Product | Promise<Product>;
     products(): Product[] | Promise<Product[]>;
     user(uid: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
