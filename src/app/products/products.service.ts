@@ -49,5 +49,20 @@ export class ProductsService {
     };
   }
 
+ async getAllProducts() {
+    const products = await this.prisma.products.findMany({
+      where: {
+        isActive: true,
+      },
+      include: {
+        createdByInfo: true,
+        productCategories: true,
+      },
+    });
 
+    return products.map((product) => ({
+      ...product,
+      categories: product.productCategories.map((pc) => pc.category as Category),
+    }));
+  }
 }

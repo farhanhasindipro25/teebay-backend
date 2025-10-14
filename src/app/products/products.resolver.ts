@@ -8,6 +8,11 @@ import { Product } from './products.entity';
 export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
+   @Query(() => [Product], { name: 'products' })
+  async findAll(): Promise<Product[]> {
+    return this.productsService.getAllProducts();
+  }
+
   @Mutation(() => Product, { name: 'createProduct' })
   async create(
     @Args('createProductInput') createProductInput: CreateProductDto,
