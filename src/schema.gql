@@ -10,6 +10,26 @@ type AuthUser {
   uid: String!
 }
 
+enum Category {
+  ELECTRONICS
+  FURNITURE
+  HOME_APPLIANCES
+  OUTDOOR
+  SPORTING_GOODS
+  TOYS
+}
+
+input CreateProductInput {
+  categories: [Category!]!
+  description: String
+  price: Float!
+  rentalPrice: Float
+  rentalTimeline: String
+  rentalType: String
+  title: String!
+  userUid: String!
+}
+
 input CreateUserInput {
   address: String
   email: String!
@@ -35,8 +55,28 @@ type LoginResponse {
 }
 
 type Mutation {
+  createProduct(createProductInput: CreateProductInput!): Product!
   createUser(createUserInput: CreateUserInput!): User!
   login(loginInput: LoginInput!): LoginResponse!
+}
+
+type Product {
+  categories: [Category!]!
+  createdAt: DateTime!
+  createdById: Int!
+  createdByInfo: User
+  description: String
+  id: Int!
+  isActive: Boolean!
+  isBought: Boolean!
+  isRented: Boolean!
+  price: Float!
+  rentalPrice: Float
+  rentalTimeline: String
+  rentalType: String
+  title: String!
+  uid: String!
+  updatedAt: DateTime!
 }
 
 type Query {
@@ -53,6 +93,7 @@ type User {
   name: String!
   password: String!
   phone: String
+  products: [Product!]
   uid: String!
   updatedAt: DateTime!
 }

@@ -51,7 +51,8 @@ model Products{
   price Float
   rentalPrice Float? @map("rental_price")
   rentalType String? @map("rental_type") 
-  rentalTimeline String? @map("rental_timeline")
+  rentStartsAt String? @map("rent_starts_at")
+  rentEndsAt String? @map("rent_ends_at")
 
   isBought Boolean @default(false) @map("is_bought")
   isRented Boolean @default(false) @map("is_rented")

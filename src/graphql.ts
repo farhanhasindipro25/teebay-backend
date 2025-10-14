@@ -8,6 +8,26 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum Category {
+    ELECTRONICS = "ELECTRONICS",
+    FURNITURE = "FURNITURE",
+    HOME_APPLIANCES = "HOME_APPLIANCES",
+    OUTDOOR = "OUTDOOR",
+    SPORTING_GOODS = "SPORTING_GOODS",
+    TOYS = "TOYS"
+}
+
+export interface CreateProductInput {
+    categories: Category[];
+    description?: Nullable<string>;
+    price: number;
+    rentalPrice?: Nullable<number>;
+    rentalTimeline?: Nullable<string>;
+    rentalType?: Nullable<string>;
+    title: string;
+    userUid: string;
+}
+
 export interface CreateUserInput {
     address?: Nullable<string>;
     email: string;
@@ -36,8 +56,28 @@ export interface LoginResponse {
 }
 
 export interface IMutation {
+    createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
+}
+
+export interface Product {
+    categories: Category[];
+    createdAt: DateTime;
+    createdById: number;
+    createdByInfo?: Nullable<User>;
+    description?: Nullable<string>;
+    id: number;
+    isActive: boolean;
+    isBought: boolean;
+    isRented: boolean;
+    price: number;
+    rentalPrice?: Nullable<number>;
+    rentalTimeline?: Nullable<string>;
+    rentalType?: Nullable<string>;
+    title: string;
+    uid: string;
+    updatedAt: DateTime;
 }
 
 export interface IQuery {
@@ -54,6 +94,7 @@ export interface User {
     name: string;
     password: string;
     phone?: Nullable<string>;
+    products?: Nullable<Product[]>;
     uid: string;
     updatedAt: DateTime;
 }

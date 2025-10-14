@@ -4,6 +4,7 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 import { GraphqlModule } from './shared/graphql/graphql.module';
 import { UsersModule } from './app/users/users.module';
 import { AuthModule } from './app/auth/auth.module';
+import { ProductsModule } from './app/products/products.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { AuthModule } from './app/auth/auth.module';
     PrismaModule,
     GraphqlModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    ProductsModule
   ],
   controllers: [],
   providers: [],
