@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { GraphqlModule } from './shared/graphql/graphql.module';
 import { UsersModule } from './app/users/users.module';
+import { AuthModule } from './app/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UsersModule } from './app/users/users.module';
     }), 
     PrismaModule,
     GraphqlModule,
+    AuthModule,
     UsersModule
   ],
   controllers: [],

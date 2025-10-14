@@ -16,8 +16,28 @@ export interface CreateUserInput {
     phone?: Nullable<string>;
 }
 
+export interface LoginInput {
+    email: string;
+    password: string;
+}
+
+export interface AuthUser {
+    address?: Nullable<string>;
+    email: string;
+    name: string;
+    phone?: Nullable<string>;
+    uid: string;
+}
+
+export interface LoginResponse {
+    message: string;
+    success: boolean;
+    user?: Nullable<AuthUser>;
+}
+
 export interface IMutation {
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
+    login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
 }
 
 export interface IQuery {
