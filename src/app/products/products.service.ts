@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { generateUID } from '../../utils/uid-generator';
-import { CreateProductDto } from './products.dto';
+import { CreateProductDto, UpdateProductDto } from './products.dto';
 import { Category } from './products.entity';
 
 
@@ -109,5 +109,62 @@ export class ProductsService {
       ...product,
       categories: product.productCategories.map((pc) => pc.category as Category),
     }));
+  }
+
+    async updateProduct(updateProductInput: UpdateProductDto) {
+    const { productUid, userUid, categories, ...rest } = updateProductInput;
+
+    const product = await this.prisma.products.findUnique({
+      where: { uid: productUid },
+      include: {
+        createdByInfo: true,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with UID ${productUid} not found`);
+    }
+
+    const user = await this.prisma.users.findUnique({
+      where: { uid: userUid },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+    if (product.createdById !== user.id) {
+      throw new ForbiddenException('You are not authorized to update this product');
+    }
+    if (product.isBought) {
+      throw new ForbiddenException('Cannot update a product that has been bought');
+    }
+    if (product.isRented) {
+      throw new ForbiddenException('Cannot update a product that is currently rented');
+    }
+
+    const payload = {
+      ...rest,
+      ...(categories && categories.length > 0 && {
+        productCategories: {
+          deleteMany: {},
+          create: categories.map((category) => ({
+            category: category as any,
+          })),
+        },
+      }),
+    };
+
+    const updatedProduct = await this.prisma.products.update({
+      where: { uid: productUid },
+      data: payload,
+      include: {
+        createdByInfo: true,
+        productCategories: true,
+      },
+    });
+
+    return {
+      ...updatedProduct,
+      categories: updatedProduct.productCategories.map((pc) => pc.category as Category),
+    };
   }
 }

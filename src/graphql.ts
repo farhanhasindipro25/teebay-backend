@@ -42,6 +42,19 @@ export interface LoginInput {
     password: string;
 }
 
+export interface UpdateProductInput {
+    categories?: Nullable<Category[]>;
+    description?: Nullable<string>;
+    price?: Nullable<number>;
+    productUid: string;
+    rentEndsAt?: Nullable<string>;
+    rentStartsAt?: Nullable<string>;
+    rentalPrice?: Nullable<number>;
+    rentalType?: Nullable<string>;
+    title?: Nullable<string>;
+    userUid: string;
+}
+
 export interface AuthUser {
     address?: Nullable<string>;
     email: string;
@@ -60,6 +73,7 @@ export interface IMutation {
     createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
+    updateProduct(updateProductInput: UpdateProductInput): Product | Promise<Product>;
 }
 
 export interface Product {

@@ -59,6 +59,7 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   createUser(createUserInput: CreateUserInput!): User!
   login(loginInput: LoginInput!): LoginResponse!
+  updateProduct(updateProductInput: UpdateProductInput!): Product!
 }
 
 type Product {
@@ -87,6 +88,19 @@ type Query {
   productsByUser(userUid: String!): [Product!]!
   user(uid: String!): User!
   users: [User!]!
+}
+
+input UpdateProductInput {
+  categories: [Category!]
+  description: String
+  price: Float
+  productUid: String!
+  rentEndsAt: String
+  rentStartsAt: String
+  rentalPrice: Float
+  rentalType: String
+  title: String
+  userUid: String!
 }
 
 type User {
