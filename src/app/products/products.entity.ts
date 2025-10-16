@@ -14,6 +14,15 @@ registerEnumType(Category, {
   name: 'Category',
 });
 
+@ObjectType()
+export class DeleteProductResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+}
+
 
 @ObjectType()
 export class Product {

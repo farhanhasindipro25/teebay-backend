@@ -63,6 +63,11 @@ export interface AuthUser {
     uid: string;
 }
 
+export interface DeleteProductResponse {
+    message: string;
+    success: boolean;
+}
+
 export interface LoginResponse {
     message: string;
     success: boolean;
@@ -72,6 +77,7 @@ export interface LoginResponse {
 export interface IMutation {
     createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
+    deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
     updateProduct(updateProductInput: UpdateProductInput): Product | Promise<Product>;
 }

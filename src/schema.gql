@@ -44,6 +44,11 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DeleteProductResponse {
+  message: String!
+  success: Boolean!
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -58,6 +63,7 @@ type LoginResponse {
 type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   createUser(createUserInput: CreateUserInput!): User!
+  deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
   login(loginInput: LoginInput!): LoginResponse!
   updateProduct(updateProductInput: UpdateProductInput!): Product!
 }

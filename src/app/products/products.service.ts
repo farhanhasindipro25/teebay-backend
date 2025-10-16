@@ -167,4 +167,45 @@ export class ProductsService {
       categories: updatedProduct.productCategories.map((pc) => pc.category as Category),
     };
   }
+
+   async deleteProduct(productUid: string, userUid: string) {
+    const product = await this.prisma.products.findUnique({
+      where: { uid: productUid },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with UID ${productUid} not found`);
+    }
+
+    const user = await this.prisma.users.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    if (product.createdById !== user.id) {
+      throw new ForbiddenException('You are not authorized to delete this product');
+    }
+
+    if (product.isBought) {
+      throw new ForbiddenException('Cannot delete a product that has been bought');
+    }
+
+    if (product.isRented) {
+      throw new ForbiddenException('Cannot delete a product that is currently rented');
+    }
+
+    await this.prisma.products.update({
+      where: { uid: productUid },
+      data: { isActive: false },
+    });
+
+    return {
+      success: true,
+      message: 'Product deleted successfully',
+    };
+  }
+
 }
