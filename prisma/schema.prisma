@@ -14,21 +14,23 @@ datasource db {
 }
 
 model Users {
-  id Int @id @default(autoincrement())
+  id  Int    @id @default(autoincrement())
   uid String @unique
 
-  name String
-  email String @unique
-  phone String?
-  address String? 
+  name    String
+  email   String  @unique
+  phone   String?
+  address String?
 
   password String
 
-  isActive Boolean @default(true) @map("is_active")
+  isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  products Products[]
+  products  Products[]
+  purchases Transactions[] @relation("BoughtBy")
+  sales     Transactions[] @relation("SoldBy")
 
   @@map("users")
 }
@@ -42,41 +44,63 @@ enum Category {
   TOYS
 }
 
-model Products{
-  id Int @id @default(autoincrement())
+model Products {
+  id  Int    @id @default(autoincrement())
   uid String @unique
 
-  title String
-  description String?
-  price Float
-  rentalPrice Float? @map("rental_price")
-  rentalType String? @map("rental_type") 
+  title        String
+  description  String?
+  price        Float
+  rentalPrice  Float?  @map("rental_price")
+  rentalType   String? @map("rental_type")
   rentStartsAt String? @map("rent_starts_at")
-  rentEndsAt String? @map("rent_ends_at")
+  rentEndsAt   String? @map("rent_ends_at")
 
   isBought Boolean @default(false) @map("is_bought")
   isRented Boolean @default(false) @map("is_rented")
 
-  createdById Int @map("created_by_id")
+  createdById   Int   @map("created_by_id")
   createdByInfo Users @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
-  isActive Boolean @default(true) @map("is_active")
+  isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  transactions Transactions[]
 
   productCategories ProductCategories[]
 
   @@map("products")
 }
+
 model ProductCategories {
-  id         String   @id @default(cuid())
-  productId  Int
-  category   Category
-  
-  productInfo    Products  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  productId Int
+  category  Category
+
+  productInfo Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   @@unique([productId, category])
   @@index([productId])
   @@map("product_categories")
 }
 
+model Transactions {
+  id  Int    @id @default(autoincrement())
+  uid String @unique
+
+  productId   Int      @map("product_id")
+  productInfo Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  buyerId   Int   @map("buyer_id")
+  buyerInfo Users @relation("BoughtBy",fields: [buyerId], references: [id], onDelete: Cascade)
+
+  sellerId   Int   @map("seller_id")
+  sellerInfo Users @relation("SoldBy",fields: [sellerId], references: [id], onDelete: Cascade)
+
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("transactions")
+}
