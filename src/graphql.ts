@@ -17,6 +17,11 @@ export enum Category {
     TOYS = "TOYS"
 }
 
+export enum TransactionType {
+    RENTAL = "RENTAL",
+    SALE = "SALE"
+}
+
 export interface BuyProductInput {
     buyerUid: string;
     productUid: string;
@@ -132,6 +137,7 @@ export interface Transaction {
     productInfo: Product;
     sellerId: number;
     sellerInfo: User;
+    type: TransactionType;
     uid: string;
     updatedAt: DateTime;
 }

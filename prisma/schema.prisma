@@ -51,6 +51,7 @@ model Products {
   title        String
   description  String?
   price        Float
+  
   rentalPrice  Float?  @map("rental_price")
   rentalType   String? @map("rental_type")
   rentStartsAt String? @map("rent_starts_at")
@@ -74,7 +75,7 @@ model Products {
 }
 
 model ProductCategories {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   productId Int
   category  Category
 
@@ -85,22 +86,33 @@ model ProductCategories {
   @@map("product_categories")
 }
 
+enum TransactionType {
+  SALE
+  RENTAL
+}
+
 model Transactions {
   id  Int    @id @default(autoincrement())
-  uid String @unique
+  uid String @unique @default(cuid())
+
+  type TransactionType @default(SALE)
 
   productId   Int      @map("product_id")
   productInfo Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   buyerId   Int   @map("buyer_id")
-  buyerInfo Users @relation("BoughtBy",fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerInfo Users @relation("BoughtBy", fields: [buyerId], references: [id], onDelete: Cascade)
 
   sellerId   Int   @map("seller_id")
-  sellerInfo Users @relation("SoldBy",fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerInfo Users @relation("SoldBy", fields: [sellerId], references: [id], onDelete: Cascade)
 
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([productId])
+  @@index([type])
   @@map("transactions")
 }

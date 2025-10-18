@@ -118,8 +118,15 @@ type Transaction {
   productInfo: Product!
   sellerId: Int!
   sellerInfo: User!
+  type: TransactionType!
   uid: String!
   updatedAt: DateTime!
+}
+
+"""The type of transaction"""
+enum TransactionType {
+  RENTAL
+  SALE
 }
 
 input UpdateProductInput {

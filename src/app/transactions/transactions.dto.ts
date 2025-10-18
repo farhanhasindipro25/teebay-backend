@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
 
 @InputType('BuyProductInput')
@@ -11,4 +11,3 @@ export class BuyProductDto {
   @IsNotEmpty({ message: 'Buyer UID is required' })
   buyerUid: string;
 }
-

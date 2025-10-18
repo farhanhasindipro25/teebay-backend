@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { generateUID } from 'src/utils/uid-generator';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { BuyProductDto } from './transactions.dto';
-import { generateUID } from 'src/utils/uid-generator';
-import { Transaction } from './transactions.entity';
+import { Transaction, TransactionType } from './transactions.entity';
 
 @Injectable()
 export class TransactionsService {
@@ -24,6 +24,10 @@ export class TransactionsService {
       throw new NotFoundException(`Product with UID ${productUid} not found`);
     }
 
+    if (!product.isActive) {
+      throw new BadRequestException('Product is not active');
+    }
+
     if (product.isBought) {
       throw new BadRequestException('Product has already been bought');
     }
@@ -36,6 +40,10 @@ export class TransactionsService {
       throw new NotFoundException(`Buyer with UID ${buyerUid} not found`);
     }
 
+    if (!buyer.isActive) {
+      throw new BadRequestException('Buyer account is not active');
+    }
+
     if (product.createdById === buyer.id) {
       throw new BadRequestException('You cannot buy your own product');
     }
@@ -44,6 +52,7 @@ export class TransactionsService {
       const boughtProduct = await trx.transactions.create({
         data: {
           uid: generateUID(),
+          type: TransactionType.SALE,
           productId: product.id,
           buyerId: buyer.id,
           sellerId: product.createdById,
