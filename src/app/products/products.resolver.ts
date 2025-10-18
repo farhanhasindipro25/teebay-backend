@@ -1,38 +1,45 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './products.dto';
-import { DeleteProductResponse, Product } from './products.entity';
+import {
+  DeleteProductResponse,
+  Product,
+  ProductResponse,
+  ProductsResponse,
+} from './products.entity';
 
 @Resolver(() => Product)
 export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Query(() => [Product], { name: 'products' })
-  async findAll(): Promise<Product[]> {
+  @Query(() => ProductsResponse, { name: 'products' })
+  async findAll(): Promise<ProductsResponse> {
     return this.productsService.getAllProducts();
   }
 
-  @Query(() => Product, { name: 'product' })
-  async findOne(@Args('uid') uid: string): Promise<Product> {
+  @Query(() => ProductResponse, { name: 'product' })
+  async findOne(@Args('uid') uid: string): Promise<ProductResponse> {
     return this.productsService.getProductByUid(uid);
   }
 
-  @Query(() => [Product], { name: 'productsByUser' })
-  async findByUser(@Args('userUid') userUid: string): Promise<Product[]> {
+  @Query(() => ProductsResponse, { name: 'productsByUser' })
+  async findByUser(
+    @Args('userUid') userUid: string,
+  ): Promise<ProductsResponse> {
     return this.productsService.getProductsOfUser(userUid);
   }
 
-  @Mutation(() => Product, { name: 'createProduct' })
+  @Mutation(() => ProductResponse, { name: 'createProduct' })
   async create(
     @Args('createProductInput') createProductInput: CreateProductDto,
-  ): Promise<Product> {
+  ): Promise<ProductResponse> {
     return this.productsService.createProduct(createProductInput);
   }
 
-  @Mutation(() => Product, { name: 'updateProduct' })
+  @Mutation(() => ProductResponse, { name: 'updateProduct' })
   async update(
     @Args('updateProductInput') updateProductInput: UpdateProductDto,
-  ): Promise<Product> {
+  ): Promise<ProductResponse> {
     return this.productsService.updateProduct(updateProductInput);
   }
 

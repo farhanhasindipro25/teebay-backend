@@ -99,12 +99,12 @@ export interface LoginResponse {
 
 export interface IMutation {
     buyProduct(buyProductInput: BuyProductInput): BuyProductResponse | Promise<BuyProductResponse>;
-    createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
+    createProduct(createProductInput: CreateProductInput): ProductResponse | Promise<ProductResponse>;
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
     rentProduct(rentProductInput: RentProductInput): RentProductResponse | Promise<RentProductResponse>;
-    updateProduct(updateProductInput: UpdateProductInput): Product | Promise<Product>;
+    updateProduct(updateProductInput: UpdateProductInput): ProductResponse | Promise<ProductResponse>;
 }
 
 export interface Product {
@@ -127,11 +127,23 @@ export interface Product {
     updatedAt: DateTime;
 }
 
+export interface ProductResponse {
+    data: Product;
+    message: string;
+    success: boolean;
+}
+
+export interface ProductsResponse {
+    data: Product[];
+    message: string;
+    success: boolean;
+}
+
 export interface IQuery {
     getUserTransactions(userUid: string): UserTransactionsResponse | Promise<UserTransactionsResponse>;
-    product(uid: string): Product | Promise<Product>;
-    products(): Product[] | Promise<Product[]>;
-    productsByUser(userUid: string): Product[] | Promise<Product[]>;
+    product(uid: string): ProductResponse | Promise<ProductResponse>;
+    products(): ProductsResponse | Promise<ProductsResponse>;
+    productsByUser(userUid: string): ProductsResponse | Promise<ProductsResponse>;
     user(uid: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
 }

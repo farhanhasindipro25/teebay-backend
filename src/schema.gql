@@ -73,12 +73,12 @@ type LoginResponse {
 
 type Mutation {
   buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
-  createProduct(createProductInput: CreateProductInput!): Product!
+  createProduct(createProductInput: CreateProductInput!): ProductResponse!
   createUser(createUserInput: CreateUserInput!): User!
   deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
   login(loginInput: LoginInput!): LoginResponse!
   rentProduct(rentProductInput: RentProductInput!): RentProductResponse!
-  updateProduct(updateProductInput: UpdateProductInput!): Product!
+  updateProduct(updateProductInput: UpdateProductInput!): ProductResponse!
 }
 
 type Product {
@@ -101,11 +101,23 @@ type Product {
   updatedAt: DateTime!
 }
 
+type ProductResponse {
+  data: Product!
+  message: String!
+  success: Boolean!
+}
+
+type ProductsResponse {
+  data: [Product!]!
+  message: String!
+  success: Boolean!
+}
+
 type Query {
   getUserTransactions(userUid: String!): UserTransactionsResponse!
-  product(uid: String!): Product!
-  products: [Product!]!
-  productsByUser(userUid: String!): [Product!]!
+  product(uid: String!): ProductResponse!
+  products: ProductsResponse!
+  productsByUser(userUid: String!): ProductsResponse!
   user(uid: String!): User!
   users: [User!]!
 }

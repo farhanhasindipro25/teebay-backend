@@ -1,4 +1,10 @@
-import { ObjectType, Field, Int, Float, registerEnumType } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  Int,
+  Float,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { User } from '../users/user.entity';
 
 export enum Category {
@@ -22,7 +28,6 @@ export class DeleteProductResponse {
   @Field()
   message: string;
 }
-
 
 @ObjectType()
 export class Product {
@@ -76,4 +81,28 @@ export class Product {
 
   @Field()
   updatedAt: Date;
+}
+
+@ObjectType()
+export class ProductsResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => [Product])
+  data: Product[];
+}
+
+@ObjectType()
+export class ProductResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => Product)
+  data: Product;
 }

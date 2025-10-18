@@ -71,10 +71,7 @@ export class ProductsService {
     try {
       const products = await this.prisma.products.findMany({
         where: { isActive: true },
-        include: {
-          createdByInfo: true,
-          productCategories: true,
-        },
+        include: { createdByInfo: true, productCategories: true },
       });
 
       return {
@@ -101,10 +98,7 @@ export class ProductsService {
     try {
       const product = await this.prisma.products.findUnique({
         where: { uid },
-        include: {
-          createdByInfo: true,
-          productCategories: true,
-        },
+        include: { createdByInfo: true, productCategories: true },
       });
 
       if (!product) {
@@ -142,14 +136,8 @@ export class ProductsService {
       }
 
       const products = await this.prisma.products.findMany({
-        where: {
-          createdById: user.id,
-          isActive: true,
-        },
-        include: {
-          createdByInfo: true,
-          productCategories: true,
-        },
+        where: { createdById: user.id, isActive: true },
+        include: { createdByInfo: true, productCategories: true },
       });
 
       return {
@@ -236,10 +224,14 @@ export class ProductsService {
       });
 
       return {
-        ...updatedProduct,
-        categories: updatedProduct.productCategories.map(
-          (pc) => pc.category as Category,
-        ),
+        success: true,
+        message: 'Product updated successfully',
+        data: {
+          ...updatedProduct,
+          categories: updatedProduct.productCategories.map(
+            (pc) => pc.category as Category,
+          ),
+        },
       };
     } catch (error) {
       console.error('updateProduct error:', error);
