@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { generateUID } from '../../utils/uid-generator';
 import { CreateUserDto } from './users.dto';
@@ -8,40 +12,72 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(createUserInput: CreateUserDto) {
-    const { password, ...rest } = createUserInput;
-    
-    const user = await this.prisma.users.create({
-      data: {
-        ...rest,
-        uid: generateUID(),
-        password,
-        phone: rest.phone || null,
-        address: rest.address || null,
-      },
-    });
+    try {
+      const { password, ...rest } = createUserInput;
 
-    return user;
+      const user = await this.prisma.users.create({
+        data: {
+          ...rest,
+          uid: generateUID(),
+          password,
+          phone: rest.phone || null,
+          address: rest.address || null,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while creating a user.',
+        context: 'UsersService - createUser',
+        error: error.message,
+      });
+    }
   }
 
   async getUsers() {
-    return this.prisma.users.findMany({
-      where: {
-        isActive: true
-      }
-    });
+    try {
+      return await this.prisma.users.findMany({
+        where: {
+          isActive: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while retrieving users.',
+        context: 'UsersService - getUsers',
+        error: error.message,
+      });
+    }
   }
 
-   async getUserByUid(uid: string) {
-    const user = await this.prisma.users.findUnique({
-      where: {
-        uid,
-      },
-    });
+  async getUserByUid(uid: string) {
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: {
+          uid,
+        },
+      });
 
-    if (!user) {
-      throw new NotFoundException(`User with UID ${uid} not found`);
+      if (!user) {
+        throw new NotFoundException({
+          success: false,
+          message: `User with UID ${uid} not found`,
+          context: 'UsersService - getUserByUid',
+        });
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while retrieving user by UID.',
+        context: 'UsersService - getUserByUid',
+        error: error.message,
+      });
     }
-
-    return user;
   }
 }
