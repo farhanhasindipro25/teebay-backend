@@ -1,0 +1,185 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthUser {
+  address: String
+  email: String!
+  name: String!
+  phone: String
+  uid: String!
+}
+
+input BuyProductInput {
+  buyerUid: String!
+  productUid: String!
+}
+
+type BuyProductResponse {
+  message: String!
+  success: Boolean!
+  transaction: Transaction
+}
+
+enum Category {
+  ELECTRONICS
+  FURNITURE
+  HOME_APPLIANCES
+  OUTDOOR
+  SPORTING_GOODS
+  TOYS
+}
+
+input CreateProductInput {
+  categories: [Category!]!
+  description: String
+  price: Float!
+  rentEndsAt: String
+  rentStartsAt: String
+  rentalPrice: Float
+  rentalType: String
+  title: String!
+  userUid: String!
+}
+
+input CreateUserInput {
+  address: String
+  email: String!
+  name: String!
+  password: String!
+  phone: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DeleteProductResponse {
+  message: String!
+  success: Boolean!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  message: String!
+  success: Boolean!
+  user: AuthUser
+}
+
+type Mutation {
+  buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  createUser(createUserInput: CreateUserInput!): User!
+  deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
+  login(loginInput: LoginInput!): LoginResponse!
+  rentProduct(rentProductInput: RentProductInput!): RentProductResponse!
+  updateProduct(updateProductInput: UpdateProductInput!): Product!
+}
+
+type Product {
+  categories: [Category!]!
+  createdAt: DateTime!
+  createdById: Int!
+  createdByInfo: User
+  description: String
+  id: Int!
+  isActive: Boolean!
+  isBought: Boolean!
+  isRented: Boolean!
+  price: Float!
+  rentEndsAt: String
+  rentStartsAt: String
+  rentalPrice: Float
+  rentalType: String
+  title: String!
+  uid: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  getUserTransactions(userUid: String!): UserTransactionsResponse!
+  product(uid: String!): Product!
+  products: [Product!]!
+  productsByUser(userUid: String!): [Product!]!
+  user(uid: String!): User!
+  users: [User!]!
+}
+
+input RentProductInput {
+  productUid: String!
+  rentEndsAt: String!
+  rentStartsAt: String!
+  renterUid: String!
+}
+
+type RentProductResponse {
+  message: String!
+  success: Boolean!
+  transaction: Transaction
+}
+
+type Transaction {
+  buyerId: Int!
+  buyerInfo: User!
+  createdAt: DateTime!
+  id: Int!
+  isActive: Boolean!
+  productId: Int!
+  productInfo: Product!
+  sellerId: Int!
+  sellerInfo: User!
+  type: TransactionType!
+  uid: String!
+  updatedAt: DateTime!
+}
+
+"""The type of transaction"""
+enum TransactionType {
+  RENTAL
+  SALE
+}
+
+input UpdateProductInput {
+  categories: [Category!]
+  description: String
+  price: Float
+  productUid: String!
+  rentEndsAt: String
+  rentStartsAt: String
+  rentalPrice: Float
+  rentalType: String
+  title: String
+  userUid: String!
+}
+
+type User {
+  address: String
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  isActive: Boolean!
+  name: String!
+  password: String!
+  phone: String
+  products: [Product!]
+  uid: String!
+  updatedAt: DateTime!
+}
+
+type UserTransactions {
+  borrowed: [Transaction!]!
+  bought: [Transaction!]!
+  lent: [Transaction!]!
+  sold: [Transaction!]!
+}
+
+type UserTransactionsResponse {
+  message: String!
+  success: Boolean!
+  transactions: UserTransactions
+}
