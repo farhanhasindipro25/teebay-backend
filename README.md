@@ -175,19 +175,23 @@ Once the project is run successfully, visit the following link to access the Gra
 ```
 $ http://localhost:8000/graphql
 ```
+
 ---
+
 **QUERIES AND MUTATIONS FOR TESTING**
 
 ```graphql
 #Creating a user
 mutation {
-  createUser(createUserInput: {
-    name: "Farhan Hasin Dipro",
-    email: "farhan.hasin.25@gmail.com",
-    password: "password123",
-    phone: "01731441024",     
-    address: "Mohammadpur"    
-  }) {
+  createUser(
+    createUserInput: {
+      name: "Farhan Hasin Dipro"
+      email: "farhan.hasin.25@gmail.com"
+      password: "password123"
+      phone: "01731441024"
+      address: "Mohammadpur"
+    }
+  ) {
     id
     uid
     name
@@ -207,8 +211,8 @@ query {
     uid
     name
     email
-			password
-    phone 
+    password
+    phone
     address
     isActive
   }
@@ -230,13 +234,11 @@ query GetUser {
   }
 }
 
-
 #Login User
 mutation Login {
-  login(loginInput: {
-    email: "farhan.hasin.25@gmail.com"
-    password: "password123"
-  }) {
+  login(
+    loginInput: { email: "farhan.hasin.25@gmail.com", password: "password123" }
+  ) {
     success
     message
     user {
@@ -251,15 +253,17 @@ mutation Login {
 
 # #Create Product
 mutation CreateProduct {
-  createProduct(createProductInput: {
-    title: "PS5"
-    description: "lorem ipsum"
-    price: 100000
-    rentalPrice: 50000
-    rentalType: "MONTHLY"
-    categories: [TOYS]
-    userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
-  }) {
+  createProduct(
+    createProductInput: {
+      title: "PS5"
+      description: "lorem ipsum"
+      price: 100000
+      rentalPrice: 50000
+      rentalType: "MONTHLY"
+      categories: [TOYS]
+      userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+    }
+  ) {
     uid
     title
     price
@@ -277,7 +281,7 @@ query {
     id
     uid
     title
-		description
+    description
     price
     rentalPrice
     rentalType
@@ -304,7 +308,7 @@ query GetProduct {
     id
     uid
     title
-		description
+    description
     price
     rentalPrice
     rentalType
@@ -324,7 +328,6 @@ query GetProduct {
     updatedAt
   }
 }
-
 
 #Get Products of User
 query GetProductsOfUser {
@@ -354,16 +357,18 @@ query GetProductsOfUser {
 
 # #Update Product
 mutation UpdateProduct {
-  updateProduct(updateProductInput: {
-    productUid: "mgts60ef-l7wkld7egtr-fxc1l3vrluv"
-    userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
-    title: "PS4"
-    description: "lorem ipsum"
-    price: 900
-    rentalPrice: 75
-    rentalType: "WEEKLY"
-    categories: [ELECTRONICS]
-  }) {
+  updateProduct(
+    updateProductInput: {
+      productUid: "mgts60ef-l7wkld7egtr-fxc1l3vrluv"
+      userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+      title: "PS4"
+      description: "lorem ipsum"
+      price: 900
+      rentalPrice: 75
+      rentalType: "WEEKLY"
+      categories: [ELECTRONICS]
+    }
+  ) {
     uid
     title
     description
@@ -486,7 +491,6 @@ mutation RentProduct {
   }
 }
 
-
 #Get User Transactions
 query GetUserTransactions {
   getUserTransactions(userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo") {
@@ -562,7 +566,6 @@ query GetUserTransactions {
     }
   }
 }
-
 ```
 
 ---
