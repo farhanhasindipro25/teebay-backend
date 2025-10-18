@@ -48,10 +48,14 @@ export class ProductsService {
       });
 
       return {
-        ...product,
-        categories: product.productCategories.map(
-          (pc) => pc.category as Category,
-        ),
+        success: true,
+        message: 'Product created successfully',
+        data: {
+          ...product,
+          categories: product.productCategories.map(
+            (pc) => pc.category as Category,
+          ),
+        },
       };
     } catch (error) {
       console.error('createProduct error:', error);
@@ -73,12 +77,16 @@ export class ProductsService {
         },
       });
 
-      return products.map((product) => ({
-        ...product,
-        categories: product.productCategories.map(
-          (pc) => pc.category as Category,
-        ),
-      }));
+      return {
+        success: true,
+        message: 'Products fetched successfully',
+        data: products.map((product) => ({
+          ...product,
+          categories: product.productCategories.map(
+            (pc) => pc.category as Category,
+          ),
+        })),
+      };
     } catch (error) {
       console.error('getAllProducts error:', error);
       throw new InternalServerErrorException({
@@ -104,10 +112,14 @@ export class ProductsService {
       }
 
       return {
-        ...product,
-        categories: product.productCategories.map(
-          (pc) => pc.category as Category,
-        ),
+        success: true,
+        message: 'Product fetched successfully',
+        data: {
+          ...product,
+          categories: product.productCategories.map(
+            (pc) => pc.category as Category,
+          ),
+        },
       };
     } catch (error) {
       console.error('getProductByUid error:', error);
@@ -140,12 +152,16 @@ export class ProductsService {
         },
       });
 
-      return products.map((product) => ({
-        ...product,
-        categories: product.productCategories.map(
-          (pc) => pc.category as Category,
-        ),
-      }));
+      return {
+        success: true,
+        message: 'User products fetched successfully',
+        data: products.map((product) => ({
+          ...product,
+          categories: product.productCategories.map(
+            (pc) => pc.category as Category,
+          ),
+        })),
+      };
     } catch (error) {
       console.error('getProductsOfUser error:', error);
       throw new InternalServerErrorException({
