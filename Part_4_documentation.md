@@ -168,6 +168,403 @@ $ npm run build
 $ npm run dev
 ```
 
+## Accessing the GraphQL Playground
+
+Once the project is run successfully, visit the following link to access the GraphQL Playground.
+
+```
+$ http://localhost:8000/graphql
+```
 ---
-**THANK YOU**
+**QUERIES AND MUTATIONS FOR TESTING**
+
+```graphql
+#Creating a user
+mutation {
+  createUser(createUserInput: {
+    name: "Farhan Hasin Dipro",
+    email: "farhan.hasin.25@gmail.com",
+    password: "password123",
+    phone: "01731441024",     
+    address: "Mohammadpur"    
+  }) {
+    id
+    uid
+    name
+    email
+    phone
+    address
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+#Fetching all users
+query {
+  users {
+    id
+    uid
+    name
+    email
+			password
+    phone 
+    address
+    isActive
+  }
+}
+
+#Fetching one user
+query GetUser {
+  user(uid: "mgpjxehx-9i5qjh67h7n-jpyct75v9n") {
+    id
+    uid
+    password
+    name
+    email
+    phone
+    address
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+
+#Login User
+mutation Login {
+  login(loginInput: {
+    email: "farhan.hasin.25@gmail.com"
+    password: "password123"
+  }) {
+    success
+    message
+    user {
+      uid
+      name
+      email
+      phone
+      address
+    }
+  }
+}
+
+# #Create Product
+mutation CreateProduct {
+  createProduct(createProductInput: {
+    title: "PS5"
+    description: "lorem ipsum"
+    price: 100000
+    rentalPrice: 50000
+    rentalType: "MONTHLY"
+    categories: [TOYS]
+    userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+  }) {
+    uid
+    title
+    price
+    rentalPrice
+    rentalType
+    rentStartsAt
+    rentEndsAt
+    categories
+  }
+}
+
+#Fetching all products
+query {
+  products {
+    id
+    uid
+    title
+		description
+    price
+    rentalPrice
+    rentalType
+    rentStartsAt
+    rentEndsAt
+    categories
+    isBought
+    isRented
+    createdById
+    createdByInfo {
+      uid
+      name
+      email
+    }
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+#Fetching one product
+query GetProduct {
+  product(uid: "mgr2hw56-egkft8ugvem-hkfgynmd4ct") {
+    id
+    uid
+    title
+		description
+    price
+    rentalPrice
+    rentalType
+    rentStartsAt
+    rentEndsAt
+    categories
+    isBought
+    isRented
+    createdById
+    createdByInfo {
+      uid
+      name
+      email
+    }
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+
+#Get Products of User
+query GetProductsOfUser {
+  productsByUser(userUid: "mgpjxehx-9i5qjh67h7n-jpyct75v9n") {
+    uid
+    title
+    description
+    price
+    rentalPrice
+    rentalType
+    rentStartsAt
+    rentEndsAt
+    categories
+    isBought
+    isRented
+    createdById
+    createdByInfo {
+      uid
+      name
+      email
+    }
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+# #Update Product
+mutation UpdateProduct {
+  updateProduct(updateProductInput: {
+    productUid: "mgts60ef-l7wkld7egtr-fxc1l3vrluv"
+    userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+    title: "PS4"
+    description: "lorem ipsum"
+    price: 900
+    rentalPrice: 75
+    rentalType: "WEEKLY"
+    categories: [ELECTRONICS]
+  }) {
+    uid
+    title
+    description
+    price
+    rentalPrice
+    rentalType
+    rentStartsAt
+    rentEndsAt
+    categories
+    updatedAt
+    createdByInfo {
+      uid
+      name
+      email
+    }
+  }
+}
+
+#Delete Product
+mutation DeleteProduct {
+  deleteProduct(
+    productUid: "mgts60ef-l7wkld7egtr-fxc1l3vrluv"
+    userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+  ) {
+    success
+    message
+  }
+}
+
+#Buy Product
+mutation BuyProduct {
+  buyProduct(
+    buyProductInput: {
+      productUid: "mgr28ygn-p8kyjoldkc-g30riump1u7"
+      buyerUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+    }
+  ) {
+    success
+    message
+    transaction {
+      id
+      uid
+      type
+      productId
+      productInfo {
+        id
+        uid
+        title
+        description
+        price
+        isBought
+        isRented
+        categories
+        createdAt
+        updatedAt
+      }
+      buyerId
+      buyerInfo {
+        id
+        uid
+        name
+        email
+        phone
+        address
+      }
+      sellerId
+      sellerInfo {
+        id
+        uid
+        name
+        email
+        phone
+        address
+      }
+      isActive
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+#Rent Product
+mutation RentProduct {
+  rentProduct(
+    rentProductInput: {
+      productUid: "mgr2hw56-egkft8ugvem-hkfgynmd4ct"
+      renterUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo"
+      rentStartsAt: "2025-10-20 19:48:06.094"
+      rentEndsAt: "2025-10-22 19:48:06.094"
+    }
+  ) {
+    success
+    message
+    transaction {
+      id
+      uid
+      type
+      productInfo {
+        uid
+        title
+        price
+        rentalPrice
+        rentalType
+        rentStartsAt
+        rentEndsAt
+        isRented
+      }
+      buyerInfo {
+        uid
+        name
+        email
+      }
+      sellerInfo {
+        uid
+        name
+        email
+      }
+      createdAt
+    }
+  }
+}
+
+
+#Get User Transactions
+query GetUserTransactions {
+  getUserTransactions(userUid: "mgpjt7kt-koc9l854m7q-j7lyq1klgpo") {
+    success
+    message
+    transactions {
+      bought {
+        id
+        uid
+        type
+        productInfo {
+          uid
+          title
+          price
+        }
+        sellerInfo {
+          name
+          email
+        }
+        createdAt
+      }
+      sold {
+        id
+        uid
+        type
+        productInfo {
+          uid
+          title
+          price
+        }
+        buyerInfo {
+          name
+          email
+        }
+        createdAt
+      }
+      borrowed {
+        id
+        uid
+        type
+        productInfo {
+          uid
+          title
+          rentalPrice
+          rentalType
+          rentStartsAt
+          rentEndsAt
+        }
+        sellerInfo {
+          name
+          email
+        }
+        createdAt
+      }
+      lent {
+        id
+        uid
+        type
+        productInfo {
+          uid
+          title
+          rentalPrice
+          rentalType
+          rentStartsAt
+          rentEndsAt
+        }
+        buyerInfo {
+          name
+          email
+        }
+        createdAt
+      }
+    }
+  }
+}
+
+```
+
 ---
+
+## **THANK YOU**
