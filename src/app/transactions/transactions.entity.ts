@@ -62,3 +62,15 @@ export class BuyProductResponse {
   @Field(() => Transaction, { nullable: true })
   transaction?: Transaction;
 }
+
+@ObjectType()
+export class RentProductResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => Transaction, { nullable: true })
+  transaction?: Transaction;
+}

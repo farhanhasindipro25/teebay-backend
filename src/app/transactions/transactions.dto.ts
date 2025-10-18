@@ -11,3 +11,14 @@ export class BuyProductDto {
   @IsNotEmpty({ message: 'Buyer UID is required' })
   buyerUid: string;
 }
+
+@InputType('RentProductInput')
+export class RentProductDto {
+  @Field(() => String)
+  @IsNotEmpty({ message: 'Product UID is required' })
+  productUid: string;
+
+  @Field(() => String)
+  @IsNotEmpty({ message: 'Renter UID is required' })
+  renterUid: string;
+}

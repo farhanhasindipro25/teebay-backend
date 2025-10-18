@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { BuyProductDto } from './transactions.dto';
+import { BuyProductDto, RentProductDto } from './transactions.dto';
 import { TransactionsService } from './transactions.service';
-import { BuyProductResponse } from './transactions.entity';
+import { BuyProductResponse, RentProductResponse } from './transactions.entity';
 
 @Resolver()
 export class TransactionsResolver {
@@ -12,5 +12,12 @@ export class TransactionsResolver {
     @Args('buyProductInput') buyProductInput: BuyProductDto,
   ): Promise<BuyProductResponse> {
     return this.transactionsService.buyProduct(buyProductInput);
+  }
+
+  @Mutation(() => RentProductResponse)
+  async rentProduct(
+    @Args('rentProductInput') rentProductInput: RentProductDto,
+  ): Promise<RentProductResponse> {
+    return this.transactionsService.rentProduct(rentProductInput);
   }
 }

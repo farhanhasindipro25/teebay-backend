@@ -52,6 +52,11 @@ export interface LoginInput {
     password: string;
 }
 
+export interface RentProductInput {
+    productUid: string;
+    renterUid: string;
+}
+
 export interface UpdateProductInput {
     categories?: Nullable<Category[]>;
     description?: Nullable<string>;
@@ -96,6 +101,7 @@ export interface IMutation {
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
+    rentProduct(rentProductInput: RentProductInput): RentProductResponse | Promise<RentProductResponse>;
     updateProduct(updateProductInput: UpdateProductInput): Product | Promise<Product>;
 }
 
@@ -125,6 +131,12 @@ export interface IQuery {
     productsByUser(userUid: string): Product[] | Promise<Product[]>;
     user(uid: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
+}
+
+export interface RentProductResponse {
+    message: string;
+    success: boolean;
+    transaction?: Nullable<Transaction>;
 }
 
 export interface Transaction {
