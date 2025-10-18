@@ -1,13 +1,14 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { generateUID } from 'src/utils/uid-generator';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { BuyProductDto, RentProductDto } from './transactions.dto';
 import { Transaction, TransactionType } from './transactions.entity';
+import { generateUID } from '../../utils/uid-generator';
 
 @Injectable()
 export class TransactionsService {
@@ -108,30 +109,37 @@ export class TransactionsService {
   }
 
   async rentProduct(rentProductInput: RentProductDto) {
-    try {
-      const { productUid, renterUid } = rentProductInput;
+    const { productUid, renterUid, rentStartsAt, rentEndsAt } =
+      rentProductInput;
 
+    try {
       const product = await this.prisma.products.findUnique({
         where: { uid: productUid },
         include: { createdByInfo: true },
       });
 
       if (!product) {
-        throw new NotFoundException(`Product with UID ${productUid} not found`);
+        throw new NotFoundException({
+          success: false,
+          message: `Product with UID ${productUid} not found`,
+          context: 'TransactionsService - rentProduct',
+        });
       }
 
       if (product.isBought) {
-        throw new BadRequestException(
-          'Product has already been bought and cannot be rented',
-        );
+        throw new ForbiddenException({
+          success: false,
+          message: 'Product has already been bought and cannot be rented',
+          context: 'TransactionsService - rentProduct',
+        });
       }
 
       if (product.isRented) {
-        throw new BadRequestException('Product is already rented');
-      }
-
-      if (!product.rentalPrice) {
-        throw new BadRequestException('This product is not available for rent');
+        throw new ForbiddenException({
+          success: false,
+          message: 'Product is already rented',
+          context: 'TransactionsService - rentProduct',
+        });
       }
 
       const renter = await this.prisma.users.findUnique({
@@ -139,33 +147,28 @@ export class TransactionsService {
       });
 
       if (!renter) {
-        throw new NotFoundException(`Renter with UID ${renterUid} not found`);
+        throw new NotFoundException({
+          success: false,
+          message: `Renter with UID ${renterUid} not found`,
+          context: 'TransactionsService - rentProduct',
+        });
       }
 
-      if (!renter.isActive) {
-        throw new BadRequestException('Renter account is not active');
+      const startDate = new Date(rentStartsAt);
+      const endDate = new Date(rentEndsAt);
+      if (startDate < new Date()) {
+        throw new ForbiddenException({
+          success: false,
+          message: 'Rental start date cannot be in the past',
+          context: 'TransactionsService - rentProduct',
+        });
       }
-
-      if (product.createdById === renter.id) {
-        throw new BadRequestException('You cannot rent your own product');
-      }
-
-      if (product.rentStartsAt && product.rentEndsAt) {
-        const startDate = new Date(product.rentStartsAt);
-        const endDate = new Date(product.rentEndsAt);
-        const today = new Date();
-
-        if (startDate < today) {
-          throw new BadRequestException(
-            'Rental start date cannot be in the past',
-          );
-        }
-
-        if (endDate <= startDate) {
-          throw new BadRequestException(
-            'Rental end date must be after start date',
-          );
-        }
+      if (endDate <= startDate) {
+        throw new ForbiddenException({
+          success: false,
+          message: 'Rental end date must be after start date',
+          context: 'TransactionsService - rentProduct',
+        });
       }
 
       const transaction = await this.prisma.$transaction(async (trx) => {
@@ -178,18 +181,23 @@ export class TransactionsService {
             sellerId: product.createdById,
           },
           include: {
-            productInfo: {
-              include: { productCategories: true },
-            },
+            productInfo: { include: { productCategories: true } },
             buyerInfo: true,
             sellerInfo: true,
           },
         });
 
-        await trx.products.update({
+        const updatedProduct = await trx.products.update({
           where: { id: product.id },
-          data: { isRented: true },
+          data: {
+            isRented: true,
+            rentStartsAt,
+            rentEndsAt,
+          },
+          include: { productCategories: true },
         });
+
+        rentedProduct.productInfo = updatedProduct as any;
 
         return rentedProduct;
       });
@@ -210,11 +218,17 @@ export class TransactionsService {
         transaction: productDetails as Transaction,
       };
     } catch (error) {
-      console.error('rentProduct error:', error);
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
+      )
+        throw error;
+
       throw new InternalServerErrorException({
         success: false,
-        message: 'An error occurred while renting the product.',
+        message: 'An error occurred while processing the rental.',
         context: 'TransactionsService - rentProduct',
+        error: error.message,
       });
     }
   }

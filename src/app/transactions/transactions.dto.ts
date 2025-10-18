@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty } from 'class-validator';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
 @InputType('BuyProductInput')
 export class BuyProductDto {
@@ -21,4 +21,12 @@ export class RentProductDto {
   @Field(() => String)
   @IsNotEmpty({ message: 'Renter UID is required' })
   renterUid: string;
+
+  @Field(() => String)
+  @IsDateString({}, { message: 'rentStartsAt must be a valid ISO date string' })
+  rentStartsAt: string;
+
+  @Field(() => String)
+  @IsDateString({}, { message: 'rentEndsAt must be a valid ISO date string' })
+  rentEndsAt: string;
 }

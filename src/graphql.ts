@@ -54,6 +54,8 @@ export interface LoginInput {
 
 export interface RentProductInput {
     productUid: string;
+    rentEndsAt: string;
+    rentStartsAt: string;
     renterUid: string;
 }
 

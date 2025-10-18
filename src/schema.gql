@@ -112,6 +112,8 @@ type Query {
 
 input RentProductInput {
   productUid: String!
+  rentEndsAt: String!
+  rentStartsAt: String!
   renterUid: String!
 }
 
