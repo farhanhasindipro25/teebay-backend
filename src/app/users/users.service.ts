@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { generateUID } from '../../utils/uid-generator';
@@ -13,13 +14,24 @@ export class UsersService {
 
   async createUser(createUserInput: CreateUserDto) {
     try {
-      const { password, ...rest } = createUserInput;
+      const { email, ...rest } = createUserInput;
+
+      const existingUser = await this.prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException({
+          success: false,
+          message: 'An account with this email already exists!',
+        });
+      }
 
       const user = await this.prisma.users.create({
         data: {
           ...rest,
           uid: generateUID(),
-          password,
+          email,
           phone: rest.phone || null,
           address: rest.address || null,
         },
