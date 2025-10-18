@@ -100,7 +100,7 @@ export interface LoginResponse {
 export interface IMutation {
     buyProduct(buyProductInput: BuyProductInput): BuyProductResponse | Promise<BuyProductResponse>;
     createProduct(createProductInput: CreateProductInput): ProductResponse | Promise<ProductResponse>;
-    createUser(createUserInput: CreateUserInput): User | Promise<User>;
+    createUser(createUserInput: CreateUserInput): UserResponse | Promise<UserResponse>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
     rentProduct(rentProductInput: RentProductInput): RentProductResponse | Promise<RentProductResponse>;
@@ -144,8 +144,8 @@ export interface IQuery {
     product(uid: string): ProductResponse | Promise<ProductResponse>;
     products(): ProductsResponse | Promise<ProductsResponse>;
     productsByUser(userUid: string): ProductsResponse | Promise<ProductsResponse>;
-    user(uid: string): User | Promise<User>;
-    users(): User[] | Promise<User[]>;
+    user(uid: string): UserResponse | Promise<UserResponse>;
+    users(): UsersResponse | Promise<UsersResponse>;
 }
 
 export interface RentProductResponse {
@@ -183,6 +183,12 @@ export interface User {
     updatedAt: DateTime;
 }
 
+export interface UserResponse {
+    data: User;
+    message: string;
+    success: boolean;
+}
+
 export interface UserTransactions {
     borrowed: Transaction[];
     bought: Transaction[];
@@ -194,6 +200,12 @@ export interface UserTransactionsResponse {
     message: string;
     success: boolean;
     transactions?: Nullable<UserTransactions>;
+}
+
+export interface UsersResponse {
+    data: User[];
+    message: string;
+    success: boolean;
 }
 
 export type DateTime = any;

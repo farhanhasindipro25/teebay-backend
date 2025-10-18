@@ -74,7 +74,7 @@ type LoginResponse {
 type Mutation {
   buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
   createProduct(createProductInput: CreateProductInput!): ProductResponse!
-  createUser(createUserInput: CreateUserInput!): User!
+  createUser(createUserInput: CreateUserInput!): UserResponse!
   deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
   login(loginInput: LoginInput!): LoginResponse!
   rentProduct(rentProductInput: RentProductInput!): RentProductResponse!
@@ -118,8 +118,8 @@ type Query {
   product(uid: String!): ProductResponse!
   products: ProductsResponse!
   productsByUser(userUid: String!): ProductsResponse!
-  user(uid: String!): User!
-  users: [User!]!
+  user(uid: String!): UserResponse!
+  users: UsersResponse!
 }
 
 input RentProductInput {
@@ -183,6 +183,12 @@ type User {
   updatedAt: DateTime!
 }
 
+type UserResponse {
+  data: User!
+  message: String!
+  success: Boolean!
+}
+
 type UserTransactions {
   borrowed: [Transaction!]!
   bought: [Transaction!]!
@@ -194,4 +200,10 @@ type UserTransactionsResponse {
   message: String!
   success: Boolean!
   transactions: UserTransactions
+}
+
+type UsersResponse {
+  data: [User!]!
+  message: String!
+  success: Boolean!
 }

@@ -36,3 +36,27 @@ export class User {
   @Field(() => [Product], { nullable: true })
   products?: Product[];
 }
+
+@ObjectType()
+export class UsersResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => [User])
+  data: User[];
+}
+
+@ObjectType()
+export class UserResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => User)
+  data: User;
+}
