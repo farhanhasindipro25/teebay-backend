@@ -126,6 +126,7 @@ export interface Product {
 }
 
 export interface IQuery {
+    getUserTransactions(userUid: string): UserTransactionsResponse | Promise<UserTransactionsResponse>;
     product(uid: string): Product | Promise<Product>;
     products(): Product[] | Promise<Product[]>;
     productsByUser(userUid: string): Product[] | Promise<Product[]>;
@@ -166,6 +167,19 @@ export interface User {
     products?: Nullable<Product[]>;
     uid: string;
     updatedAt: DateTime;
+}
+
+export interface UserTransactions {
+    borrowed: Transaction[];
+    bought: Transaction[];
+    lent: Transaction[];
+    sold: Transaction[];
+}
+
+export interface UserTransactionsResponse {
+    message: string;
+    success: boolean;
+    transactions?: Nullable<UserTransactions>;
 }
 
 export type DateTime = any;

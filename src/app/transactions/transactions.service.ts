@@ -203,4 +203,108 @@ export class TransactionsService {
       transaction: productDetails as Transaction,
     };
   }
+
+  async getUserTransactions(userUid: string) {
+    const user = await this.prisma.users.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    const bought = await this.prisma.transactions.findMany({
+      where: {
+        buyerId: user.id,
+        type: TransactionType.SALE,
+        isActive: true,
+      },
+      include: {
+        productInfo: {
+          include: {
+            productCategories: true,
+          },
+        },
+        buyerInfo: true,
+        sellerInfo: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const sold = await this.prisma.transactions.findMany({
+      where: {
+        sellerId: user.id,
+        type: TransactionType.SALE,
+        isActive: true,
+      },
+      include: {
+        productInfo: {
+          include: {
+            productCategories: true,
+          },
+        },
+        buyerInfo: true,
+        sellerInfo: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const borrowed = await this.prisma.transactions.findMany({
+      where: {
+        buyerId: user.id,
+        type: TransactionType.RENTAL,
+        isActive: true,
+      },
+      include: {
+        productInfo: {
+          include: {
+            productCategories: true,
+          },
+        },
+        buyerInfo: true,
+        sellerInfo: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const lent = await this.prisma.transactions.findMany({
+      where: {
+        sellerId: user.id,
+        type: TransactionType.RENTAL,
+        isActive: true,
+      },
+      include: {
+        productInfo: {
+          include: {
+            productCategories: true,
+          },
+        },
+        buyerInfo: true,
+        sellerInfo: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const processTransactions = (transactions: any[]) =>
+      transactions.map((transaction) => ({
+        ...transaction,
+        productInfo: {
+          ...transaction.productInfo,
+          categories: transaction.productInfo.productCategories.map(
+            (pc) => pc.category,
+          ),
+        },
+      }));
+
+    return {
+      success: true,
+      message: 'User transactions retrieved successfully',
+      transactions: {
+        bought: processTransactions(bought) as Transaction[],
+        sold: processTransactions(sold) as Transaction[],
+        borrowed: processTransactions(borrowed) as Transaction[],
+        lent: processTransactions(lent) as Transaction[],
+      },
+    };
+  }
 }

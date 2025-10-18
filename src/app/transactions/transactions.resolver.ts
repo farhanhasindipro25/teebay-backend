@@ -1,7 +1,11 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BuyProductDto, RentProductDto } from './transactions.dto';
 import { TransactionsService } from './transactions.service';
-import { BuyProductResponse, RentProductResponse } from './transactions.entity';
+import {
+  BuyProductResponse,
+  RentProductResponse,
+  UserTransactionsResponse,
+} from './transactions.entity';
 
 @Resolver()
 export class TransactionsResolver {
@@ -19,5 +23,12 @@ export class TransactionsResolver {
     @Args('rentProductInput') rentProductInput: RentProductDto,
   ): Promise<RentProductResponse> {
     return this.transactionsService.rentProduct(rentProductInput);
+  }
+
+  @Query(() => UserTransactionsResponse)
+  async getUserTransactions(
+    @Args('userUid') userUid: string,
+  ): Promise<UserTransactionsResponse> {
+    return this.transactionsService.getUserTransactions(userUid);
   }
 }

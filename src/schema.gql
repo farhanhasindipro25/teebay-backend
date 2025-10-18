@@ -102,6 +102,7 @@ type Product {
 }
 
 type Query {
+  getUserTransactions(userUid: String!): UserTransactionsResponse!
   product(uid: String!): Product!
   products: [Product!]!
   productsByUser(userUid: String!): [Product!]!
@@ -166,4 +167,17 @@ type User {
   products: [Product!]
   uid: String!
   updatedAt: DateTime!
+}
+
+type UserTransactions {
+  borrowed: [Transaction!]!
+  bought: [Transaction!]!
+  lent: [Transaction!]!
+  sold: [Transaction!]!
+}
+
+type UserTransactionsResponse {
+  message: String!
+  success: Boolean!
+  transactions: UserTransactions
 }

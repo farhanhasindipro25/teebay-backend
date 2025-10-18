@@ -74,3 +74,30 @@ export class RentProductResponse {
   @Field(() => Transaction, { nullable: true })
   transaction?: Transaction;
 }
+
+@ObjectType()
+export class UserTransactions {
+  @Field(() => [Transaction])
+  bought: Transaction[];
+
+  @Field(() => [Transaction])
+  sold: Transaction[];
+
+  @Field(() => [Transaction])
+  borrowed: Transaction[];
+
+  @Field(() => [Transaction])
+  lent: Transaction[];
+}
+
+@ObjectType()
+export class UserTransactionsResponse {
+  @Field()
+  success: boolean;
+
+  @Field()
+  message: string;
+
+  @Field(() => UserTransactions, { nullable: true })
+  transactions?: UserTransactions;
+}
