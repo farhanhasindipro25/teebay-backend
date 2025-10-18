@@ -10,6 +10,17 @@ type AuthUser {
   uid: String!
 }
 
+input BuyProductInput {
+  buyerUid: String!
+  productUid: String!
+}
+
+type BuyProductResponse {
+  message: String!
+  success: Boolean!
+  transaction: Transaction
+}
+
 enum Category {
   ELECTRONICS
   FURNITURE
@@ -61,6 +72,7 @@ type LoginResponse {
 }
 
 type Mutation {
+  buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
   createProduct(createProductInput: CreateProductInput!): Product!
   createUser(createUserInput: CreateUserInput!): User!
   deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
@@ -94,6 +106,20 @@ type Query {
   productsByUser(userUid: String!): [Product!]!
   user(uid: String!): User!
   users: [User!]!
+}
+
+type Transaction {
+  buyerId: Int!
+  buyerInfo: User!
+  createdAt: DateTime!
+  id: Int!
+  isActive: Boolean!
+  productId: Int!
+  productInfo: Product!
+  sellerId: Int!
+  sellerInfo: User!
+  uid: String!
+  updatedAt: DateTime!
 }
 
 input UpdateProductInput {

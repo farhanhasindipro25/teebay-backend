@@ -17,6 +17,11 @@ export enum Category {
     TOYS = "TOYS"
 }
 
+export interface BuyProductInput {
+    buyerUid: string;
+    productUid: string;
+}
+
 export interface CreateProductInput {
     categories: Category[];
     description?: Nullable<string>;
@@ -63,6 +68,12 @@ export interface AuthUser {
     uid: string;
 }
 
+export interface BuyProductResponse {
+    message: string;
+    success: boolean;
+    transaction?: Nullable<Transaction>;
+}
+
 export interface DeleteProductResponse {
     message: string;
     success: boolean;
@@ -75,6 +86,7 @@ export interface LoginResponse {
 }
 
 export interface IMutation {
+    buyProduct(buyProductInput: BuyProductInput): BuyProductResponse | Promise<BuyProductResponse>;
     createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
     createUser(createUserInput: CreateUserInput): User | Promise<User>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
@@ -108,6 +120,20 @@ export interface IQuery {
     productsByUser(userUid: string): Product[] | Promise<Product[]>;
     user(uid: string): User | Promise<User>;
     users(): User[] | Promise<User[]>;
+}
+
+export interface Transaction {
+    buyerId: number;
+    buyerInfo: User;
+    createdAt: DateTime;
+    id: number;
+    isActive: boolean;
+    productId: number;
+    productInfo: Product;
+    sellerId: number;
+    sellerInfo: User;
+    uid: string;
+    updatedAt: DateTime;
 }
 
 export interface User {
