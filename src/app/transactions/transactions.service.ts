@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { generateUID } from 'src/utils/uid-generator';
@@ -13,280 +14,75 @@ export class TransactionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async buyProduct(buyProductInput: BuyProductDto) {
-    const { productUid, buyerUid } = buyProductInput;
+    try {
+      const { productUid, buyerUid } = buyProductInput;
 
-    const product = await this.prisma.products.findUnique({
-      where: { uid: productUid },
-      include: { createdByInfo: true },
-    });
-
-    if (!product) {
-      throw new NotFoundException(`Product with UID ${productUid} not found`);
-    }
-
-    if (!product.isActive) {
-      throw new BadRequestException('Product is not active');
-    }
-
-    if (product.isRented) {
-      throw new BadRequestException(
-        'Product has already been rented and cannot be bought',
-      );
-    }
-
-    if (product.isBought) {
-      throw new BadRequestException('Product has already been bought');
-    }
-
-    const buyer = await this.prisma.users.findUnique({
-      where: { uid: buyerUid },
-    });
-
-    if (!buyer) {
-      throw new NotFoundException(`Buyer with UID ${buyerUid} not found`);
-    }
-
-    if (!buyer.isActive) {
-      throw new BadRequestException('Buyer account is not active');
-    }
-
-    if (product.createdById === buyer.id) {
-      throw new BadRequestException('You cannot buy your own product');
-    }
-
-    const transaction = await this.prisma.$transaction(async (trx) => {
-      const boughtProduct = await trx.transactions.create({
-        data: {
-          uid: generateUID(),
-          type: TransactionType.SALE,
-          productId: product.id,
-          buyerId: buyer.id,
-          sellerId: product.createdById,
-        },
-        include: {
-          productInfo: {
-            include: {
-              productCategories: true,
-            },
-          },
-          buyerInfo: true,
-          sellerInfo: true,
-        },
+      const product = await this.prisma.products.findUnique({
+        where: { uid: productUid },
+        include: { createdByInfo: true },
       });
 
-      await trx.products.update({
-        where: { id: product.id },
-        data: { isBought: true },
-      });
+      if (!product) {
+        throw new NotFoundException(`Product with UID ${productUid} not found`);
+      }
 
-      return boughtProduct;
-    });
+      if (!product.isActive) {
+        throw new BadRequestException('Product is not active');
+      }
 
-    const productDetails = {
-      ...transaction,
-      productInfo: {
-        ...transaction.productInfo,
-        categories: transaction.productInfo.productCategories.map(
-          (pc) => pc.category,
-        ),
-      },
-    };
-
-    return {
-      success: true,
-      message: 'Product purchased successfully',
-      transaction: productDetails as Transaction,
-    };
-  }
-
-  async rentProduct(rentProductInput: RentProductDto) {
-    const { productUid, renterUid } = rentProductInput;
-
-    const product = await this.prisma.products.findUnique({
-      where: { uid: productUid },
-      include: { createdByInfo: true },
-    });
-
-    if (!product) {
-      throw new NotFoundException(`Product with UID ${productUid} not found`);
-    }
-
-    if (product.isBought) {
-      throw new BadRequestException(
-        'Product has already been bought and cannot be rented',
-      );
-    }
-
-    if (product.isRented) {
-      throw new BadRequestException('Product is already rented');
-    }
-
-    if (!product.rentalPrice) {
-      throw new BadRequestException('This product is not available for rent');
-    }
-
-    const renter = await this.prisma.users.findUnique({
-      where: { uid: renterUid },
-    });
-
-    if (!renter) {
-      throw new NotFoundException(`Renter with UID ${renterUid} not found`);
-    }
-
-    if (!renter.isActive) {
-      throw new BadRequestException('Renter account is not active');
-    }
-
-    if (product.createdById === renter.id) {
-      throw new BadRequestException('You cannot rent your own product');
-    }
-
-    if (product.rentStartsAt && product.rentEndsAt) {
-      const startDate = new Date(product.rentStartsAt);
-      const endDate = new Date(product.rentEndsAt);
-      const today = new Date();
-
-      if (startDate < today) {
+      if (product.isRented) {
         throw new BadRequestException(
-          'Rental start date cannot be in the past',
+          'Product has already been rented and cannot be bought',
         );
       }
 
-      if (endDate <= startDate) {
-        throw new BadRequestException(
-          'Rental end date must be after start date',
-        );
+      if (product.isBought) {
+        throw new BadRequestException('Product has already been bought');
       }
-    }
 
-    const transaction = await this.prisma.$transaction(async (trx) => {
-      const rentedProduct = await trx.transactions.create({
-        data: {
-          uid: generateUID(),
-          type: TransactionType.RENTAL,
-          productId: product.id,
-          buyerId: renter.id,
-          sellerId: product.createdById,
-        },
-        include: {
-          productInfo: {
-            include: {
-              productCategories: true,
+      const buyer = await this.prisma.users.findUnique({
+        where: { uid: buyerUid },
+      });
+
+      if (!buyer) {
+        throw new NotFoundException(`Buyer with UID ${buyerUid} not found`);
+      }
+
+      if (!buyer.isActive) {
+        throw new BadRequestException('Buyer account is not active');
+      }
+
+      if (product.createdById === buyer.id) {
+        throw new BadRequestException('You cannot buy your own product');
+      }
+
+      const transaction = await this.prisma.$transaction(async (trx) => {
+        const boughtProduct = await trx.transactions.create({
+          data: {
+            uid: generateUID(),
+            type: TransactionType.SALE,
+            productId: product.id,
+            buyerId: buyer.id,
+            sellerId: product.createdById,
+          },
+          include: {
+            productInfo: {
+              include: { productCategories: true },
             },
+            buyerInfo: true,
+            sellerInfo: true,
           },
-          buyerInfo: true,
-          sellerInfo: true,
-        },
+        });
+
+        await trx.products.update({
+          where: { id: product.id },
+          data: { isBought: true },
+        });
+
+        return boughtProduct;
       });
 
-      await trx.products.update({
-        where: { id: product.id },
-        data: { isRented: true },
-      });
-
-      return rentedProduct;
-    });
-
-    const productDetails = {
-      ...transaction,
-      productInfo: {
-        ...transaction.productInfo,
-        categories: transaction.productInfo.productCategories.map(
-          (pc) => pc.category,
-        ),
-      },
-    };
-
-    return {
-      success: true,
-      message: 'Product rented successfully',
-      transaction: productDetails as Transaction,
-    };
-  }
-
-  async getUserTransactions(userUid: string) {
-    const user = await this.prisma.users.findUnique({
-      where: { uid: userUid },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with UID ${userUid} not found`);
-    }
-
-    const bought = await this.prisma.transactions.findMany({
-      where: {
-        buyerId: user.id,
-        type: TransactionType.SALE,
-        isActive: true,
-      },
-      include: {
-        productInfo: {
-          include: {
-            productCategories: true,
-          },
-        },
-        buyerInfo: true,
-        sellerInfo: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const sold = await this.prisma.transactions.findMany({
-      where: {
-        sellerId: user.id,
-        type: TransactionType.SALE,
-        isActive: true,
-      },
-      include: {
-        productInfo: {
-          include: {
-            productCategories: true,
-          },
-        },
-        buyerInfo: true,
-        sellerInfo: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const borrowed = await this.prisma.transactions.findMany({
-      where: {
-        buyerId: user.id,
-        type: TransactionType.RENTAL,
-        isActive: true,
-      },
-      include: {
-        productInfo: {
-          include: {
-            productCategories: true,
-          },
-        },
-        buyerInfo: true,
-        sellerInfo: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const lent = await this.prisma.transactions.findMany({
-      where: {
-        sellerId: user.id,
-        type: TransactionType.RENTAL,
-        isActive: true,
-      },
-      include: {
-        productInfo: {
-          include: {
-            productCategories: true,
-          },
-        },
-        buyerInfo: true,
-        sellerInfo: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const processTransactions = (transactions: any[]) =>
-      transactions.map((transaction) => ({
+      const productDetails = {
         ...transaction,
         productInfo: {
           ...transaction.productInfo,
@@ -294,17 +90,229 @@ export class TransactionsService {
             (pc) => pc.category,
           ),
         },
-      }));
+      };
 
-    return {
-      success: true,
-      message: 'User transactions retrieved successfully',
-      transactions: {
-        bought: processTransactions(bought) as Transaction[],
-        sold: processTransactions(sold) as Transaction[],
-        borrowed: processTransactions(borrowed) as Transaction[],
-        lent: processTransactions(lent) as Transaction[],
-      },
-    };
+      return {
+        success: true,
+        message: 'Product purchased successfully',
+        transaction: productDetails as Transaction,
+      };
+    } catch (error) {
+      console.error('buyProduct error:', error);
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while buying the product.',
+        context: 'TransactionsService - buyProduct',
+      });
+    }
+  }
+
+  async rentProduct(rentProductInput: RentProductDto) {
+    try {
+      const { productUid, renterUid } = rentProductInput;
+
+      const product = await this.prisma.products.findUnique({
+        where: { uid: productUid },
+        include: { createdByInfo: true },
+      });
+
+      if (!product) {
+        throw new NotFoundException(`Product with UID ${productUid} not found`);
+      }
+
+      if (product.isBought) {
+        throw new BadRequestException(
+          'Product has already been bought and cannot be rented',
+        );
+      }
+
+      if (product.isRented) {
+        throw new BadRequestException('Product is already rented');
+      }
+
+      if (!product.rentalPrice) {
+        throw new BadRequestException('This product is not available for rent');
+      }
+
+      const renter = await this.prisma.users.findUnique({
+        where: { uid: renterUid },
+      });
+
+      if (!renter) {
+        throw new NotFoundException(`Renter with UID ${renterUid} not found`);
+      }
+
+      if (!renter.isActive) {
+        throw new BadRequestException('Renter account is not active');
+      }
+
+      if (product.createdById === renter.id) {
+        throw new BadRequestException('You cannot rent your own product');
+      }
+
+      if (product.rentStartsAt && product.rentEndsAt) {
+        const startDate = new Date(product.rentStartsAt);
+        const endDate = new Date(product.rentEndsAt);
+        const today = new Date();
+
+        if (startDate < today) {
+          throw new BadRequestException(
+            'Rental start date cannot be in the past',
+          );
+        }
+
+        if (endDate <= startDate) {
+          throw new BadRequestException(
+            'Rental end date must be after start date',
+          );
+        }
+      }
+
+      const transaction = await this.prisma.$transaction(async (trx) => {
+        const rentedProduct = await trx.transactions.create({
+          data: {
+            uid: generateUID(),
+            type: TransactionType.RENTAL,
+            productId: product.id,
+            buyerId: renter.id,
+            sellerId: product.createdById,
+          },
+          include: {
+            productInfo: {
+              include: { productCategories: true },
+            },
+            buyerInfo: true,
+            sellerInfo: true,
+          },
+        });
+
+        await trx.products.update({
+          where: { id: product.id },
+          data: { isRented: true },
+        });
+
+        return rentedProduct;
+      });
+
+      const productDetails = {
+        ...transaction,
+        productInfo: {
+          ...transaction.productInfo,
+          categories: transaction.productInfo.productCategories.map(
+            (pc) => pc.category,
+          ),
+        },
+      };
+
+      return {
+        success: true,
+        message: 'Product rented successfully',
+        transaction: productDetails as Transaction,
+      };
+    } catch (error) {
+      console.error('rentProduct error:', error);
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while renting the product.',
+        context: 'TransactionsService - rentProduct',
+      });
+    }
+  }
+
+  async getUserTransactions(userUid: string) {
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: { uid: userUid },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with UID ${userUid} not found`);
+      }
+
+      const bought = await this.prisma.transactions.findMany({
+        where: {
+          buyerId: user.id,
+          type: TransactionType.SALE,
+          isActive: true,
+        },
+        include: {
+          productInfo: { include: { productCategories: true } },
+          buyerInfo: true,
+          sellerInfo: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const sold = await this.prisma.transactions.findMany({
+        where: {
+          sellerId: user.id,
+          type: TransactionType.SALE,
+          isActive: true,
+        },
+        include: {
+          productInfo: { include: { productCategories: true } },
+          buyerInfo: true,
+          sellerInfo: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const borrowed = await this.prisma.transactions.findMany({
+        where: {
+          buyerId: user.id,
+          type: TransactionType.RENTAL,
+          isActive: true,
+        },
+        include: {
+          productInfo: { include: { productCategories: true } },
+          buyerInfo: true,
+          sellerInfo: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const lent = await this.prisma.transactions.findMany({
+        where: {
+          sellerId: user.id,
+          type: TransactionType.RENTAL,
+          isActive: true,
+        },
+        include: {
+          productInfo: { include: { productCategories: true } },
+          buyerInfo: true,
+          sellerInfo: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const processTransactions = (transactions: any[]) =>
+        transactions.map((transaction) => ({
+          ...transaction,
+          productInfo: {
+            ...transaction.productInfo,
+            categories: transaction.productInfo.productCategories.map(
+              (pc) => pc.category,
+            ),
+          },
+        }));
+
+      return {
+        success: true,
+        message: 'User transactions retrieved successfully',
+        transactions: {
+          bought: processTransactions(bought) as Transaction[],
+          sold: processTransactions(sold) as Transaction[],
+          borrowed: processTransactions(borrowed) as Transaction[],
+          lent: processTransactions(lent) as Transaction[],
+        },
+      };
+    } catch (error) {
+      console.error('getUserTransactions error:', error);
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred while retrieving user transactions.',
+        context: 'TransactionsService - getUserTransactions',
+      });
+    }
   }
 }

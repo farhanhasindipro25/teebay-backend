@@ -47,6 +47,7 @@ export class AuthService {
         },
       };
     } catch (error) {
+      console.error('Login error:', error);
       throw new InternalServerErrorException({
         success: false,
         message: 'An error occurred during login.',
