@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class AuthUser {
@@ -30,3 +30,11 @@ export class LoginResponse {
   user?: AuthUser;
 }
 
+@ObjectType()
+export class LogoutResponse {
+  @Field(() => Boolean)
+  success: boolean;
+
+  @Field(() => String)
+  message: string;
+}

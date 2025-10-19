@@ -55,4 +55,31 @@ export class AuthService {
       });
     }
   }
+
+  async logout(userUid: string) {
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: { uid: userUid },
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          message: 'User not found',
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Logout successful',
+      };
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw new InternalServerErrorException({
+        success: false,
+        message: 'An error occurred during logout.',
+        context: 'AuthService - logout',
+      });
+    }
+  }
 }

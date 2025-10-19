@@ -97,12 +97,18 @@ export interface LoginResponse {
     user?: Nullable<AuthUser>;
 }
 
+export interface LogoutResponse {
+    message: string;
+    success: boolean;
+}
+
 export interface IMutation {
     buyProduct(buyProductInput: BuyProductInput): BuyProductResponse | Promise<BuyProductResponse>;
     createProduct(createProductInput: CreateProductInput): ProductResponse | Promise<ProductResponse>;
     createUser(createUserInput: CreateUserInput): UserResponse | Promise<UserResponse>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
+    logout(userUid: string): LogoutResponse | Promise<LogoutResponse>;
     rentProduct(rentProductInput: RentProductInput): RentProductResponse | Promise<RentProductResponse>;
     updateProduct(updateProductInput: UpdateProductInput): ProductResponse | Promise<ProductResponse>;
 }

@@ -71,12 +71,18 @@ type LoginResponse {
   user: AuthUser
 }
 
+type LogoutResponse {
+  message: String!
+  success: Boolean!
+}
+
 type Mutation {
   buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
   createProduct(createProductInput: CreateProductInput!): ProductResponse!
   createUser(createUserInput: CreateUserInput!): UserResponse!
   deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
   login(loginInput: LoginInput!): LoginResponse!
+  logout(userUid: String!): LogoutResponse!
   rentProduct(rentProductInput: RentProductInput!): RentProductResponse!
   updateProduct(updateProductInput: UpdateProductInput!): ProductResponse!
 }
