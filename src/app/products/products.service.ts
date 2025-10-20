@@ -33,8 +33,6 @@ export class ProductsService {
           description: payload.description || null,
           rentalPrice: payload.rentalPrice || null,
           rentalType: payload.rentalType || null,
-          rentStartsAt: payload.rentStartsAt || null,
-          rentEndsAt: payload.rentEndsAt || null,
           productCategories: {
             create: categories.map((category) => ({
               category: category as any,

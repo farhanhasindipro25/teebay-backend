@@ -31,8 +31,6 @@ export interface CreateProductInput {
     categories: Category[];
     description?: Nullable<string>;
     price: number;
-    rentEndsAt?: Nullable<string>;
-    rentStartsAt?: Nullable<string>;
     rentalPrice?: Nullable<number>;
     rentalType?: Nullable<string>;
     title: string;
