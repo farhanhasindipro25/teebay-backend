@@ -31,8 +31,6 @@ export interface CreateProductInput {
     categories: Category[];
     description?: Nullable<string>;
     price: number;
-    rentEndsAt?: Nullable<string>;
-    rentStartsAt?: Nullable<string>;
     rentalPrice?: Nullable<number>;
     rentalType?: Nullable<string>;
     title: string;
@@ -97,14 +95,20 @@ export interface LoginResponse {
     user?: Nullable<AuthUser>;
 }
 
+export interface LogoutResponse {
+    message: string;
+    success: boolean;
+}
+
 export interface IMutation {
     buyProduct(buyProductInput: BuyProductInput): BuyProductResponse | Promise<BuyProductResponse>;
-    createProduct(createProductInput: CreateProductInput): Product | Promise<Product>;
-    createUser(createUserInput: CreateUserInput): User | Promise<User>;
+    createProduct(createProductInput: CreateProductInput): ProductResponse | Promise<ProductResponse>;
+    createUser(createUserInput: CreateUserInput): UserResponse | Promise<UserResponse>;
     deleteProduct(productUid: string, userUid: string): DeleteProductResponse | Promise<DeleteProductResponse>;
     login(loginInput: LoginInput): LoginResponse | Promise<LoginResponse>;
+    logout(userUid: string): LogoutResponse | Promise<LogoutResponse>;
     rentProduct(rentProductInput: RentProductInput): RentProductResponse | Promise<RentProductResponse>;
-    updateProduct(updateProductInput: UpdateProductInput): Product | Promise<Product>;
+    updateProduct(updateProductInput: UpdateProductInput): ProductResponse | Promise<ProductResponse>;
 }
 
 export interface Product {
@@ -127,13 +131,25 @@ export interface Product {
     updatedAt: DateTime;
 }
 
+export interface ProductResponse {
+    data: Product;
+    message: string;
+    success: boolean;
+}
+
+export interface ProductsResponse {
+    data: Product[];
+    message: string;
+    success: boolean;
+}
+
 export interface IQuery {
     getUserTransactions(userUid: string): UserTransactionsResponse | Promise<UserTransactionsResponse>;
-    product(uid: string): Product | Promise<Product>;
-    products(): Product[] | Promise<Product[]>;
-    productsByUser(userUid: string): Product[] | Promise<Product[]>;
-    user(uid: string): User | Promise<User>;
-    users(): User[] | Promise<User[]>;
+    product(uid: string): ProductResponse | Promise<ProductResponse>;
+    products(): ProductsResponse | Promise<ProductsResponse>;
+    productsByUser(userUid: string): ProductsResponse | Promise<ProductsResponse>;
+    user(uid: string): UserResponse | Promise<UserResponse>;
+    users(): UsersResponse | Promise<UsersResponse>;
 }
 
 export interface RentProductResponse {
@@ -171,6 +187,12 @@ export interface User {
     updatedAt: DateTime;
 }
 
+export interface UserResponse {
+    data: User;
+    message: string;
+    success: boolean;
+}
+
 export interface UserTransactions {
     borrowed: Transaction[];
     bought: Transaction[];
@@ -182,6 +204,12 @@ export interface UserTransactionsResponse {
     message: string;
     success: boolean;
     transactions?: Nullable<UserTransactions>;
+}
+
+export interface UsersResponse {
+    data: User[];
+    message: string;
+    success: boolean;
 }
 
 export type DateTime = any;

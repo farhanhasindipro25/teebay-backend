@@ -1,7 +1,13 @@
 import { InputType, Field, Float } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber, IsOptional, IsArray, ArrayMinSize, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  ArrayMinSize,
+  Min,
+} from 'class-validator';
 import { Category } from './products.entity';
-
 
 @InputType('CreateProductInput')
 export class CreateProductDto {
@@ -28,14 +34,6 @@ export class CreateProductDto {
   @IsOptional()
   rentalType?: string;
 
-  @Field(() => String, { nullable: true })
-  @IsOptional()
-  rentStartsAt?: string;
-
-  @Field(() => String, { nullable: true })
-  @IsOptional()
-  rentEndsAt?: string;
-
   @Field(() => [Category])
   @IsArray({ message: 'Categories must be an array' })
   @ArrayMinSize(1, { message: 'At least one category is required' })
@@ -45,7 +43,6 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'User UID is required' })
   userUid: string;
 }
-
 
 @InputType('UpdateProductInput')
 export class UpdateProductDto {

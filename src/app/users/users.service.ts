@@ -37,7 +37,11 @@ export class UsersService {
         },
       });
 
-      return user;
+      return {
+        success: true,
+        message: 'User created successfully',
+        data: user,
+      };
     } catch (error) {
       throw new InternalServerErrorException({
         success: false,
@@ -50,11 +54,17 @@ export class UsersService {
 
   async getUsers() {
     try {
-      return await this.prisma.users.findMany({
+      const users = await this.prisma.users.findMany({
         where: {
           isActive: true,
         },
       });
+
+      return {
+        success: true,
+        message: 'Users retrieved successfully',
+        data: users,
+      };
     } catch (error) {
       throw new InternalServerErrorException({
         success: false,
@@ -81,7 +91,11 @@ export class UsersService {
         });
       }
 
-      return user;
+      return {
+        success: true,
+        message: 'User retrieved successfully',
+        data: user,
+      };
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException({

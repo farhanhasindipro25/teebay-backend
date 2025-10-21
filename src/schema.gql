@@ -34,8 +34,6 @@ input CreateProductInput {
   categories: [Category!]!
   description: String
   price: Float!
-  rentEndsAt: String
-  rentStartsAt: String
   rentalPrice: Float
   rentalType: String
   title: String!
@@ -71,14 +69,20 @@ type LoginResponse {
   user: AuthUser
 }
 
+type LogoutResponse {
+  message: String!
+  success: Boolean!
+}
+
 type Mutation {
   buyProduct(buyProductInput: BuyProductInput!): BuyProductResponse!
-  createProduct(createProductInput: CreateProductInput!): Product!
-  createUser(createUserInput: CreateUserInput!): User!
+  createProduct(createProductInput: CreateProductInput!): ProductResponse!
+  createUser(createUserInput: CreateUserInput!): UserResponse!
   deleteProduct(productUid: String!, userUid: String!): DeleteProductResponse!
   login(loginInput: LoginInput!): LoginResponse!
+  logout(userUid: String!): LogoutResponse!
   rentProduct(rentProductInput: RentProductInput!): RentProductResponse!
-  updateProduct(updateProductInput: UpdateProductInput!): Product!
+  updateProduct(updateProductInput: UpdateProductInput!): ProductResponse!
 }
 
 type Product {
@@ -101,13 +105,25 @@ type Product {
   updatedAt: DateTime!
 }
 
+type ProductResponse {
+  data: Product!
+  message: String!
+  success: Boolean!
+}
+
+type ProductsResponse {
+  data: [Product!]!
+  message: String!
+  success: Boolean!
+}
+
 type Query {
   getUserTransactions(userUid: String!): UserTransactionsResponse!
-  product(uid: String!): Product!
-  products: [Product!]!
-  productsByUser(userUid: String!): [Product!]!
-  user(uid: String!): User!
-  users: [User!]!
+  product(uid: String!): ProductResponse!
+  products: ProductsResponse!
+  productsByUser(userUid: String!): ProductsResponse!
+  user(uid: String!): UserResponse!
+  users: UsersResponse!
 }
 
 input RentProductInput {
@@ -171,6 +187,12 @@ type User {
   updatedAt: DateTime!
 }
 
+type UserResponse {
+  data: User!
+  message: String!
+  success: Boolean!
+}
+
 type UserTransactions {
   borrowed: [Transaction!]!
   bought: [Transaction!]!
@@ -182,4 +204,10 @@ type UserTransactionsResponse {
   message: String!
   success: Boolean!
   transactions: UserTransactions
+}
+
+type UsersResponse {
+  data: [User!]!
+  message: String!
+  success: Boolean!
 }
