@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import dayjs from 'dayjs';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { BuyProductDto, RentProductDto } from './transactions.dto';
 import { Transaction, TransactionType } from './transactions.entity';
@@ -154,16 +155,19 @@ export class TransactionsService {
         });
       }
 
-      const startDate = new Date(rentStartsAt);
-      const endDate = new Date(rentEndsAt);
-      if (startDate < new Date()) {
+      const startDate = dayjs(rentStartsAt);
+      const endDate = dayjs(rentEndsAt);
+      const today = dayjs().startOf('day');
+
+      if (startDate.isBefore(today)) {
         throw new ForbiddenException({
           success: false,
           message: 'Rental start date cannot be in the past',
           context: 'TransactionsService - rentProduct',
         });
       }
-      if (endDate <= startDate) {
+
+      if (endDate.isBefore(startDate) || endDate.isSame(startDate)) {
         throw new ForbiddenException({
           success: false,
           message: 'Rental end date must be after start date',
